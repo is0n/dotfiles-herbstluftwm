@@ -1,0 +1,27 @@
+# Import files (Colors, Fonts, Etc)
+import:
+  - ~/.config/alacritty/colors.yml
+  - ~/.config/alacritty/fonts.yml
+
+# Set environment variables
+env:
+  TERM: xterm-256color
+
+# Terminal window settings
+window:
+  opacity: 0.85
+
+  padding:
+    x: 8
+    y: 8
+
+  # dimensions:
+  #   columns: 98
+  #   lines: 24
+
+# Scrolling
+history: 10000
+multiplier: 3
+
+# Live config reload
+live_config_reload: true

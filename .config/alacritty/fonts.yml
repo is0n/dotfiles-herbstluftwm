@@ -1,0 +1,27 @@
+# Font configuration
+font:
+  normal:
+    family: "JetBrains Mono"
+    style: Medium
+
+  # Bold font face
+  bold:
+    family: "JetBrains Mono"
+    style: Bold
+
+  # Italic font face
+  italic:
+    family: "JetBrains Mono"
+    style: Italic
+
+  # Bold italic font face
+  bold_italic:
+    family: "JetBrains Mono"
+    style: Bold Italic
+
+  # Point size
+  size: 11
+
+  offset:
+    x: -1
+    y: -1
