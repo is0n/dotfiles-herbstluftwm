@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+space=$(df -k . | cut -d '%' -f1)
+space=${space##* }
+
+echo ${space}

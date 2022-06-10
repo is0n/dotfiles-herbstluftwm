@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+: "${BUTTON:=1}"
+
+node="$(bspc query -N -n pointed)"
+
+die() {
+    jobs -p | xargs -r -n1 -I{} kill {}
+    exit
+}
+
+trap 'die' USR1
+
+{ bspc subscribe node_focus | while read -r _ _ _ wid; do
+    (( wid != node )) && break; done; kill -USR1 "$$" ;} &
+{ while xinput list \
+      | sed -nE 's,.*id=([0-9]+).*slave\s+pointer.*,\1,p' \
+      | xargs -r -n1 -I{} xinput query-state {} 2> /dev/null \
+      | grep -qF "button[${BUTTON}]=down"; do sleep .3; done; kill -USR1 "$$" ;} &
+
+if bspc node "$node.tiled" -f; then
+    node_tiled_rect=($(bspc query -T -n "$node" | jq -r '.client.tiledRectangle[]'))
+    bspc node "$node" -t floating
+    xdo move   -x "${node_tiled_rect[0]}" -y "${node_tiled_rect[1]}" "$node"
+    xdo resize -w "${node_tiled_rect[2]}" -h "${node_tiled_rect[3]}" "$node"
+elif bspc node "$node.floating" -f; then
+    :
+else
+    die
+fi
+
+eval "$(xdotool getmouselocation --shell)"
+x="$X" y="$Y"
+while :; do
+    eval "$(xdotool getmouselocation --shell)"
+    (( X != x || Y != y )) && {
+        bspc node "$node" -v "$((X - x))" "$((Y - y))"
+        x="$X" y="$Y"
+    }
+done
+
+wait

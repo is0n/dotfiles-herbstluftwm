@@ -1,0 +1,101 @@
+#!/usr/bin/env bash
+
+function hc {
+  herbstclient "$@"
+}
+
+# Unlock
+hc unlock
+
+# Reload
+hc emit_hook reload
+
+# Variables
+Mod=Mod4
+
+# Keybinds
+hc keyunbind --all
+hc keybind ${Mod}-q             close
+hc keybind ${Mod}-Control-space set_attr clients.focus.floating toggle
+hc keybind ${Mod}-f             fullscreen toggle
+hc keybind ${Mod}-h             focus left
+hc keybind ${Mod}-j             focus down
+hc keybind ${Mod}-k             focus up
+hc keybind ${Mod}-l             focus right
+hc keybind ${Mod}-Shift-f       floating on
+hc keybind ${Mod}-Shift-t       floating off
+
+# Mousebinds
+hc mouseunbind --all
+hc mousebind ${Mod}-B1 move
+hc mousebind ${Mod}-B3 resize
+
+# Frame
+hc set frame_bg_transparent on
+hc set frame_padding        0
+hc set frame_border_width   0
+
+# Tags
+tag_names=( {1..9} )
+tag_keys=( {1..9} 0 )
+
+hc rename default "${tag_names[0]}" || true
+for i in "${!tag_names[@]}"
+do
+    hc add "${tag_names[$i]}"
+    key="${tag_keys[$i]}"
+
+    if [ -n "$key" ]
+    then
+        hc keybind "$Mod-$key" use_index "$i"
+        hc keybind "$Mod-Shift-$key" move_index "$i"
+    fi
+done
+
+# Rules
+hc unrule -F
+hc rule focus=on
+hc rule floatplacement=smart
+hc rule instance="Floating" manage=on floating=on floatplacement=center
+
+# Border (theme)
+hc attr theme.border_width       1
+hc attr theme.outer_width        1
+hc attr theme.active.outer_color '#f0f0f0'
+hc attr theme.normal.outer_color '#0f0f0f'
+
+# Title (theme)
+hc attr theme.title_height 25
+hc attr theme.title_when always
+hc attr theme.active.color '#0f0f0f'
+hc attr theme.normal.color '#0f0f0f'
+hc attr theme.title_color '#f0f0f0'
+hc attr theme.title_align center
+hc attr theme.title_font 'JetBrains Mono:pixelsize=14'
+hc attr theme.title_depth 10
+
+# Settings
+hc set window_gap 12
+hc set frame_gap 0
+hc set focus_follows_mouse 1
+hc set update_dragged_clients 1
+hc set_layout horizontal
+
+# EWW
+function launch_eww {
+  eww daemon
+  eww open bar
+  ~/.config/eww/scripts/powermenu
+  ~/.config/eww/scripts/dashboard
+}
+
+pgrep eww || launch_eww &
+
+# Spotify dameon
+pgrep spotifyd || spotifyd &
+
+# Psuedo swallowing
+pgrep pidswallow || pidswallow -l &
+
+# Alttab
+pgrep alttab || alttab -w 1 &

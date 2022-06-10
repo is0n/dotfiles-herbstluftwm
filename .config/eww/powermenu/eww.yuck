@@ -1,0 +1,17 @@
+(defwindow powermenu
+  :monitor 0
+  :geometry (geometry
+    :width "4%"
+    :anchor "center left")
+  :stacking "fg"
+  :windowtype "dock"
+  (powermenu))
+
+(defwidget powermenu []
+  (box :orientation "v" :space-evenly false :class "powermenu" :spacing 20
+    (button :class "shutdown" :tooltip "Shutdown" :onclick "systemctl poweroff" "")
+    (button :class "reboot"   :tooltip "Reboot"   :onclick "systemctl reboot" "")
+    (button :class "lock"     :tooltip "Lock"     :onclick "scripts/lock" "")
+    (button :class "sleep"    :tooltip "Sleep"    :onclick "scripts/lock && systemctl suspend &" "")
+    (button :class "logout"   :tooltip "Logout"   :onclick "scripts/wm -k" "﫼")
+    (button :class "close"    :tooltip "Close"    :onclick "../scripts/powermenu" "")))

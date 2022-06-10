@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+quotes="
+software is like sex : it's better when it's free.
+Intelligence is the ability to avoid doing work, yet getting the work done.
+Given enough eyeballs, all bugs are shallow.
+I'd argue that everybody wants to do something that matters
+Humans are destined to be party animals, and technology will follow."
+
+lines="$(echo "${quotes}" | tail -n +2 | wc -l)"
+random=$((1 + $RANDOM % $lines))
+
+quote=$(echo "${quotes}" | tail -n +2 | sed "${random}!d")
+
+echo "\"${quote}\"
+  ― Linus Torvalds"

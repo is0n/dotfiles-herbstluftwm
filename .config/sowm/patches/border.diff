@@ -1,0 +1,272 @@
+From 575aa4d23c3d27c10cf5bc51aa691191ee163199 Mon Sep 17 00:00:00 2001
+From: keening <kazmiller285@outlook.com>
+Date: Mon, 17 May 2021 03:15:35 +0200
+Subject: [PATCH 1/6] Test
+
+---
+ config.def.h |  6 ++++--
+ sowm.c       | 31 ++++++++++++++++++++++++++++---
+ sowm.h       |  2 ++
+ 3 files changed, 34 insertions(+), 5 deletions(-)
+
+diff --git a/config.def.h b/config.def.h
+index cae2009..110e99e 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -2,6 +2,10 @@
+ #define CONFIG_H
+ 
+ #define MOD Mod4Mask
++#define BORDER_SELECT   "#880000"
++#define BORDER_NORMAL   "#333333"
++#define BORDER_NONE     "#000000"
++#define BORDER_WIDTH    2
+ 
+ const char* menu[]    = {"dmenu_run",      0};
+ const char* term[]    = {"st",             0};
+@@ -11,7 +15,6 @@ const char* bridown[] = {"bri", "10", "-", 0};
+ const char* voldown[] = {"amixer", "sset", "Master", "5%-",         0};
+ const char* volup[]   = {"amixer", "sset", "Master", "5%+",         0};
+ const char* volmute[] = {"amixer", "sset", "Master", "toggle",      0};
+-const char* colors[]  = {"bud", "/home/goldie/Pictures/Wallpapers", 0};
+ 
+ static struct key keys[] = {
+     {MOD,      XK_q,   win_kill,   {0}},
+@@ -22,7 +25,6 @@ static struct key keys[] = {
+     {Mod1Mask|ShiftMask, XK_Tab, win_prev,   {0}},
+ 
+     {MOD, XK_d,      run, {.com = menu}},
+-    {MOD, XK_w,      run, {.com = colors}},
+     {MOD, XK_p,      run, {.com = scrot}},
+     {MOD, XK_Return, run, {.com = term}},
+ 
+diff --git a/sowm.c b/sowm.c
+index 96f8340..df618e5 100644
+--- a/sowm.c
++++ b/sowm.c
+@@ -4,6 +4,7 @@
+ #include <X11/XF86keysym.h>
+ #include <X11/keysym.h>
+ #include <X11/XKBlib.h>
++#include <X11/Xft/Xft.h>
+ #include <stdlib.h>
+ #include <signal.h>
+ #include <unistd.h>
+@@ -14,6 +15,7 @@ static client       *list = {0}, *ws_list[10] = {0}, *cur;
+ static int          ws = 1, sw, sh, wx, wy, numlock = 0;
+ static unsigned int ww, wh;
+ 
++static int          s;
+ static Display      *d;
+ static XButtonEvent mouse;
+ static Window       root;
+@@ -32,8 +34,25 @@ static void (*events[LASTEvent])(XEvent *e) = {
+ 
+ #include "config.h"
+ 
++unsigned long getcolor(const char *col) {
++    Colormap m = DefaultColormap(d, s);
++    XColor c;
++    return (!XAllocNamedColor(d, m, col, &c, &c))?0:c.pixel;
++}
++
+ void win_focus(client *c) {
++    if (cur) XSetWindowBorder(d, cur->w, getcolor(BORDER_NORMAL));
+     cur = c;
++
++    XSetWindowBorder(d, cur->w, getcolor(BORDER_SELECT));
++
++    if (cur->fs) XSetWindowBorder(d, cur->w, getcolor(BORDER_NONE));
++
++    if (cur->fs) {
++        XConfigureWindow(d, cur->w, CWBorderWidth, &(XWindowChanges){.border_width = 0});
++    } else {
++        XConfigureWindow(d, cur->w, CWBorderWidth, &(XWindowChanges){.border_width = BORDER_WIDTH});
++    }
+     XSetInputFocus(d, cur->w, RevertToParent, CurrentTime);
+ }
+ 
+@@ -45,6 +64,7 @@ void notify_destroy(XEvent *e) {
+ 
+ void notify_enter(XEvent *e) {
+     while(XCheckTypedEvent(d, EnterNotify, e));
++    while(XCheckTypedWindowEvent(d, mouse.subwindow, MotionNotify, e));
+ 
+     for win if (c->w == e->xcrossing.window) win_focus(c);
+ }
+@@ -105,6 +125,7 @@ void win_add(Window w) {
+     }
+ 
+     ws_save(ws);
++    win_focus(c);
+ }
+ 
+ void win_del(Window w) {
+@@ -139,9 +160,12 @@ void win_fs(const Arg arg) {
+     if ((cur->f = cur->f ? 0 : 1)) {
+         win_size(cur->w, &cur->wx, &cur->wy, &cur->ww, &cur->wh);
+         XMoveResizeWindow(d, cur->w, 0, 0, sw, sh);
+-
++        cur->fs = 1;
++        win_focus(cur);
+     } else {
+         XMoveResizeWindow(d, cur->w, cur->wx, cur->wy, cur->ww, cur->wh);
++        cur->fs = 0;
++        win_focus(cur);
+     }
+ }
+ 
+@@ -206,6 +230,7 @@ void configure_request(XEvent *e) {
+         .sibling    = ev->above,
+         .stack_mode = ev->detail
+     });
++
+ }
+ 
+ void map_request(XEvent *e) {
+@@ -277,8 +302,8 @@ int main(void) {
+ 
+     int s = DefaultScreen(d);
+     root  = RootWindow(d, s);
+-    sw    = XDisplayWidth(d, s);
+-    sh    = XDisplayHeight(d, s);
++    sw    = XDisplayWidth(d, s); //- (2*BORDER_WIDTH);
++    sh    = XDisplayHeight(d, s); //- (2*BORDER_WIDTH);
+ 
+     XSelectInput(d,  root, SubstructureRedirectMask);
+     XDefineCursor(d, root, XCreateFontCursor(d, 68));
+diff --git a/sowm.h b/sowm.h
+index b059f06..f93ebd8 100644
+--- a/sowm.h
++++ b/sowm.h
+@@ -30,9 +30,11 @@ typedef struct client {
+     struct client *next, *prev;
+     int f, wx, wy;
+     unsigned int ww, wh;
++    unsigned char fs;
+     Window w;
+ } client;
+ 
++unsigned long getcolor(const char *col);
+ void button_press(XEvent *e);
+ void button_release(XEvent *e);
+ void configure_request(XEvent *e);
+
+From de5645a0e89dc4606975c01186f4c8f1bc310cb1 Mon Sep 17 00:00:00 2001
+From: keening <63244893+keening@users.noreply.github.com>
+Date: Mon, 17 May 2021 03:18:29 +0200
+Subject: [PATCH 2/6] Update sowm.c
+
+---
+ sowm.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/sowm.c b/sowm.c
+index df618e5..70a7542 100644
+--- a/sowm.c
++++ b/sowm.c
+@@ -4,7 +4,6 @@
+ #include <X11/XF86keysym.h>
+ #include <X11/keysym.h>
+ #include <X11/XKBlib.h>
+-#include <X11/Xft/Xft.h>
+ #include <stdlib.h>
+ #include <signal.h>
+ #include <unistd.h>
+
+From f8cb5cf6420c1579a583622af01a14ba1d27fd3b Mon Sep 17 00:00:00 2001
+From: keening <63244893+keening@users.noreply.github.com>
+Date: Mon, 17 May 2021 03:19:11 +0200
+Subject: [PATCH 3/6] Update config.def.h
+
+---
+ config.def.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/config.def.h b/config.def.h
+index 110e99e..0a64f6f 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -15,6 +15,7 @@ const char* bridown[] = {"bri", "10", "-", 0};
+ const char* voldown[] = {"amixer", "sset", "Master", "5%-",         0};
+ const char* volup[]   = {"amixer", "sset", "Master", "5%+",         0};
+ const char* volmute[] = {"amixer", "sset", "Master", "toggle",      0};
++const char* colors[]  = {"bud", "/home/goldie/Pictures/Wallpapers", 0};
+ 
+ static struct key keys[] = {
+     {MOD,      XK_q,   win_kill,   {0}},
+
+From ca8e0ca6eeecaf045b9e44c2ad454efacd57adca Mon Sep 17 00:00:00 2001
+From: keening <63244893+keening@users.noreply.github.com>
+Date: Mon, 17 May 2021 03:20:18 +0200
+Subject: [PATCH 4/6] Update config.def.h
+
+---
+ config.def.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/config.def.h b/config.def.h
+index 0a64f6f..cd3100e 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -26,6 +26,7 @@ static struct key keys[] = {
+     {Mod1Mask|ShiftMask, XK_Tab, win_prev,   {0}},
+ 
+     {MOD, XK_d,      run, {.com = menu}},
++    {MOD, XK_w,      run, {.com = colors}},
+     {MOD, XK_p,      run, {.com = scrot}},
+     {MOD, XK_Return, run, {.com = term}},
+ 
+
+From bf89502c301c63ba16fa558c3a70a1c4320c43cc Mon Sep 17 00:00:00 2001
+From: keening <63244893+keening@users.noreply.github.com>
+Date: Mon, 17 May 2021 03:24:37 +0200
+Subject: [PATCH 5/6] Update config.def.h
+
+---
+ config.def.h | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/config.def.h b/config.def.h
+index cd3100e..42625bf 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -4,8 +4,7 @@
+ #define MOD Mod4Mask
+ #define BORDER_SELECT   "#880000"
+ #define BORDER_NORMAL   "#333333"
+-#define BORDER_NONE     "#000000"
+-#define BORDER_WIDTH    2
++#define BORDER_WIDTH    1
+ 
+ const char* menu[]    = {"dmenu_run",      0};
+ const char* term[]    = {"st",             0};
+
+From e58c3ec3dce4abee061116bb732ab36e60b4ae88 Mon Sep 17 00:00:00 2001
+From: keening <63244893+keening@users.noreply.github.com>
+Date: Mon, 17 May 2021 03:26:26 +0200
+Subject: [PATCH 6/6] Update sowm.c
+
+---
+ sowm.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/sowm.c b/sowm.c
+index 70a7542..a675ada 100644
+--- a/sowm.c
++++ b/sowm.c
+@@ -45,13 +45,12 @@ void win_focus(client *c) {
+ 
+     XSetWindowBorder(d, cur->w, getcolor(BORDER_SELECT));
+ 
+-    if (cur->fs) XSetWindowBorder(d, cur->w, getcolor(BORDER_NONE));
+-
+     if (cur->fs) {
+         XConfigureWindow(d, cur->w, CWBorderWidth, &(XWindowChanges){.border_width = 0});
+     } else {
+         XConfigureWindow(d, cur->w, CWBorderWidth, &(XWindowChanges){.border_width = BORDER_WIDTH});
+     }
++    
+     XSetInputFocus(d, cur->w, RevertToParent, CurrentTime);
+ }
+ 

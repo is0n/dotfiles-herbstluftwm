@@ -1,0 +1,3 @@
+autoload -U colors && colors
+
+PS1="%B%{$fg[blue]%}%c %{$fg[red]%}❯%{$fg[yellow]%}❯%{$fg[green]%}❯ %{$reset_color%}"

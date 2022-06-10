@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+printf "%.0f\n" $(top -b -n1 | grep ^%Cpu | awk '{print 100-$8}')

@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+wm=$(wmctrl -m | grep Name: | awk '{print $2}')
+
+if [ "${wm}" = "herbstluftwm" ]; then
+  echo "hlwm"
+else
+  echo "${wm}"
+fi

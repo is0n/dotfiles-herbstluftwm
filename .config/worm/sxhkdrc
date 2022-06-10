@@ -1,0 +1,39 @@
+# Restart Worm
+super + shift + r
+	exec ~/.config/worm/rc
+
+# Close app
+super + q
+	wormc close-active-client
+
+# Maximize window
+super + f
+	wormc maximize-active-client
+
+# Hide window
+super + h
+  wormc minimize-active-client
+
+# Make active window float
+super + shift + space
+	wormc float-active
+
+# Make active window master
+super + ctrl + space
+	wormc master-active
+
+# Enable tiling
+super + shift + t
+	wormc layout 'tiling'
+
+# Enable floating
+super + shift + f
+	wormc layout 'floating'
+
+# Center window
+super + c
+	center
+
+# Tags (Workspaces)
+super + {_, shift + } {1-9}
+	wormc {switch,move-active}-tag {1-9}

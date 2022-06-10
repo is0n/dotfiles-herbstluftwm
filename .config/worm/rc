@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+# Behavior
+wormc layout                'floating'
+wormc struts                49 12 12 12
+wormc gaps                  12
+wormc border-width          2
+
+# Colors
+wormc border-active-pixel   $((16#fff0f0f0))
+wormc border-inactive-pixel $((16#ff0f0f0f))
+wormc text-active-pixel     $((16#fff0f0f0))
+wormc text-inactive-pixel   $((16#fff0f0f0))
+wormc frame-active-pixel    $((16#ff0f0f0f))
+wormc frame-inactive-pixel  $((16#ff0f0f0f))
+
+# Frame Buttons
+wormc close-path            "$HOME/.config/worm/window-close.png"
+wormc maximize-path         "$HOME/.config/worm/window-maximize.png"
+wormc minimize-path         "$HOME/.config/worm/window-minimize.png"
+
+# Frame Settings
+wormc text-font             'JetBrains Mono:pixelsize=14:antialias=true'
+wormc frame-left            'T;'
+wormc frame-right           'I;M;C;'
+wormc button-offset         12 8
+
+# EWW
+function launch_eww {
+  eww daemon
+  eww open bar
+}
+
+pgrep eww || launch_eww &
+
+# Psuedo swallowing
+pgrep pidswallow || pidswallow -gl &
+
+# Start sxhkd with worm bindings
+pgrep -f "sxhkd -c $HOME/.config/worm/sxhkdrc" || sxhkd -c $HOME/.config/worm/sxhkdrc &
+
+# Music daemon
+pgrep spotifyd || spotifyd &
+
+# Alttab
+pgrep alttab || alttab -w 1 &

@@ -1,0 +1,20 @@
+# Keyboard
+xmodmap -e "clear lock"
+xmodmap -e "keycode 66 = Hyper_L"
+xmodmap -e "remove mod4 = Hyper_L"
+xmodmap -e "add mod3 = Hyper_L"
+xcape -e 'Hyper_L=Escape'
+xset r rate 280 40
+xmodmap -e 'keysym Escape = Escape asciitilde Escape'
+xmodmap -e "keycode 135 = Super_L"
+
+# Colors
+xrdb ~/.Xresources
+
+# Wallpaper
+~/.local/bin/wallpaper -R
+
+# Daemons
+sxhkd &
+nm-applet &
+picom -b --experimental-backends &

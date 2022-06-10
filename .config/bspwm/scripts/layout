@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+if pgrep -f "layout" | grep -v "$$"
+then
+  pkill -f "layout"
+  exit
+fi
+
+dunstify -i "$HOME/.config/bspwm/icon.png" "Layout: Floating"
+bspc subscribe node_add | while read -a msg
+do
+    node_id=${msg[4]}
+    bspc node "$node_id" -t floating
+done

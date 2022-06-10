@@ -1,0 +1,42 @@
+# Focus windows
+super + {h,j,k,l}
+	bspc node -f {west,south,north,east}
+
+# Move windows
+super + ctrl {h,j,k,l}
+	bspc node -s {west,south,north,east}
+
+# Workspaces
+super + {_,shift + }{1-9,0}
+	bspc {desktop -f,node -d} '^{1-9,10}'
+
+hyper + {1-9,0}
+  bspc node -d '^{1-9,10}' --follow
+
+# Restart/Kill bspwm
+super + shift + {q,r}
+	bspc {quit,wm -r}
+
+# Close windows
+super + q
+	bspc node -c
+
+# Toggle floating
+super + ctrl + space
+  bspc node -t "~floating"
+
+# Toggle fullscreen
+super + f
+  bspc node -t "~fullscreen"
+
+# Drag windows
+super + button1
+  BUTTON=1 ~/.config/bspwm/scripts/drag
+
+# Floating mode
+super + alt + space
+  ~/.config/bspwm/scripts/layout
+
+# Balance windows
+super + b
+  bspc node @/ --equalize

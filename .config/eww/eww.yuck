@@ -1,0 +1,67 @@
+(defwindow bar
+  :monitor 0
+  :geometry (geometry
+    :y "6px"
+    :width "98%"
+    :height "35px"
+    :anchor "top center")
+  :stacking "fg"
+  :windowtype "dock"
+  :reserve (struts :side "top" :distance "42px")
+  (bar))
+
+(defwidget bar []
+  (box :class "bar" :orientation "h"
+    (left)
+    (center)
+    (right)))
+
+(defwidget left []
+  (box :class "left" :orientation "h" :halign "start" :valign "center" :space-evenly false :spacing 20
+    (eventbox :class "powermenu"
+              :onhover "scripts/powermenu &"
+      (button :onclick "scripts/powermenu &" ""))
+    (literal :content ws)))
+
+(defwidget center []
+  (box :class "center" :orientation "h" :halign "center" :space-evenly false :spacing 10
+    (label :class "label" :text "")
+    (label :class "text"  :text title)))
+
+(defwidget right []
+  (box :class "right" :orientation "h" :halign "end" :space-evenly false
+    (metric :label ""
+            :value cpu
+            :tooltip "${cpu}%"
+            :onchange "")
+    (metric :label ""
+            :value ram
+            :tooltip "${ram}%"
+            :onchange "")
+    (metric :label ""
+            :value bright
+            :tooltip "${bright}%"
+            :onchange "scripts/setbright {}")
+    (box :spacing 10
+      (label :class "text" :text time)
+      (eventbox :class "dashboard"
+                :onhover "scripts/dashboard &"
+        (button :onclick "scripts/dashboard &" "")))))
+
+(defwidget metric [label value tooltip onchange]
+  (box :orientation "h"
+       :class "metric"
+       :space-evenly false
+    (box :class "label" label)
+    (scale :min 0
+           :max 101
+           :value value
+           :tooltip tooltip
+           :onchange onchange)))
+
+(deflisten ws       "scripts/workspaces")
+(deflisten title    "scripts/gettitle")
+(defpoll   ram      :interval "10s" "scripts/getram")
+(defpoll   cpu      :interval "10s" "scripts/getcpu")
+(defpoll   time     :interval "1s"  "date '+%H:%M'")
+(defpoll   bright   :interval "2s"  "scripts/getbright")

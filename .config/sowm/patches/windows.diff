@@ -1,0 +1,77 @@
+From 5bd8e7c72cea6cc7888b90549f6ca68b1b61477c Mon Sep 17 00:00:00 2001
+From: Joseph Eib <xealblade@example.com>
+Date: Mon, 15 Jun 2020 13:38:52 -0400
+Subject: [PATCH] Force windows to be unique among all workspaces
+
+This is intended to correct issue #44 where opening a browser window in
+another workspace when a browser window is already open causes incorrect
+behavior.
+
+In order to correct the problem, a function `exists_win` was added to prevent
+duplicate windows being inserted into other workspaces. A global macro
+constant `NUM_WS` was also required to ensure proper bounds in `exists_win`.
+---
+ sowm.c | 18 +++++++++++++++++-
+ sowm.h |  3 +++
+ 2 files changed, 20 insertions(+), 1 deletion(-)
+
+diff --git a/sowm.c b/sowm.c
+index b4a39dd..253d611 100644
+--- a/sowm.c
++++ b/sowm.c
+@@ -7,10 +7,11 @@
+ #include <stdlib.h>
+ #include <signal.h>
+ #include <unistd.h>
++#include <stdbool.h>
+ 
+ #include "sowm.h"
+ 
+-static client       *list = {0}, *ws_list[10] = {0}, *cur;
++static client       *list = {0}, *ws_list[NUM_WS] = {0}, *cur;
+ static int          ws = 1, sw, sh, wx, wy, numlock = 0;
+ static unsigned int ww, wh;
+ 
+@@ -207,8 +208,23 @@ void configure_request(XEvent *e) {
+     });
+ }
+ 
++bool exists_win(Window w) {
++    int tmp = ws;
++    for (int i = 0; i < NUM_WS; ++i) {
++        if (i == tmp) continue;
++        ws_sel(i);
++        for win if (c->w == w) {
++            ws_sel(tmp);
++            return true;
++        }
++    }
++    ws_sel(tmp);
++    return false;
++}
++
+ void map_request(XEvent *e) {
+     Window w = e->xmaprequest.window;
++    if (exists_win(w)) return;
+ 
+     XSelectInput(d, w, StructureNotifyMask|EnterWindowMask);
+     win_size(w, &wx, &wy, &ww, &wh);
+diff --git a/sowm.h b/sowm.h
+index 455ed93..0819e99 100644
+--- a/sowm.h
++++ b/sowm.h
+@@ -1,5 +1,7 @@
+ #include <X11/Xlib.h>
+ 
++#define NUM_WS 10
++
+ #define win        (client *t=0, *c=list; c && t!=list->prev; t=c, c=c->next)
+ #define ws_save(W) ws_list[W] = list
+ #define ws_sel(W)  list = ws_list[ws = W]
+@@ -53,5 +55,6 @@ void win_prev(const Arg arg);
+ void win_next(const Arg arg);
+ void win_to_ws(const Arg arg);
+ void ws_go(const Arg arg);
++bool exists_win(Window w);
+ 
+ static int xerror() { return 0; }

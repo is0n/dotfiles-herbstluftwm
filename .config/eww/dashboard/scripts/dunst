@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+function status {
+  if [ "$(dunstctl is-paused)" = "false" ]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+function toggle {
+  if status; then
+    dunstctl set-paused true
+  else
+    dunstctl set-paused false
+  fi
+}
+
+function icon {
+  if status; then
+    echo ""
+  else
+    echo ""
+  fi
+}
+
+case "$1" in
+  icon)
+    icon;;
+  toggle)
+    toggle;;
+esac

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+wallpaper=$(cat ~/.cache/wallpaper)
+i3lockmore --image-fill "${wallpaper}"

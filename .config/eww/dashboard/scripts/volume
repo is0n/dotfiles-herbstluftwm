@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+volume=$(amixer -D pulse sget Master | grep 'Left:' | awk -F '[][]' '{ print $2 }' | tr -d '%' | head -1)
+
+function status {
+  if pacmd list-sinks | grep muted | grep yes -q; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+function value {
+  if status; then
+    exit
+  else
+    echo "${volume}"
+  fi
+}
+
+function icon {
+  if [ "${volume}" = 0 ] || status; then
+    echo "婢"
+  else
+    echo "墳"
+  fi
+}
+
+case "$1" in
+  icon)
+    icon;;
+  value)
+    value;;
+esac

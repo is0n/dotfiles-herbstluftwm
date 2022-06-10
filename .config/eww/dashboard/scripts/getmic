@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+amixer -D pulse get Capture | grep 'Mono:' | cut -d '[' -f 2 | cut -d ']' -f 1 | tr -d '%'

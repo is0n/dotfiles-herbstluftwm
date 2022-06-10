@@ -1,0 +1,133 @@
+(defwindow dashboard
+  :monitor 0
+  :geometry (geometry
+    :anchor "center right")
+  :stacking "fg"
+  :windowtype "dock"
+  (dashboard))
+
+(defwidget dashboard []
+  (box :orientation "v" :space-evenly false :class "dashboard" :spacing 20 :halign "center"
+    (info)
+    (mid)
+    (circles)
+    (quote)))
+
+(defwidget info []
+  (box :class "info" :space-evenly false :spacing 20
+    (profile)
+    (fetch)))
+
+(defwidget profile []
+  (box :orientation "v" :space-evenly false :class "profile" :halign "center"
+    (box :class "pfp" :valign "center")
+    (label :class "me" :text "[${usr}@${hst}]")))
+
+(defwidget fetch []
+  (box  :space-evenly true
+        :orientation "v"
+        :class "fetch"
+    (box :space-evenly false :class "os"
+      (box :class "label" "")
+      (label :text ": ${os}"
+             :class "text"
+             :halign "start"))
+    (box :space-evenly false :class "wm"
+      (box :class "label" "")
+      (label :text ": ${wm}"
+             :class "text"
+             :halign "start"))
+    (box :space-evenly false :class "usr"
+      (box :class "label" "")
+      (label :text ": ${usr}"
+             :class "text"
+             :halign "start"))
+    (box :space-evenly false :class "hst"
+      (box :class "label" "")
+      (label :text ": ${hst}"
+             :class "text"
+             :halign "start"))))
+
+(defwidget mid []
+  (box :class "mid" :space-evenly false :spacing 20
+    (box :orientation "v" :space-evenly false :spacing 20
+      (time)
+      (control))
+    (box :orientation "h" :halign "end"
+      (sliders))))
+
+(defwidget sliders []
+  (box :orientation "h" :space-evenly false :class "sliders" :halign "start" :valign "center" :spacing 20
+    (box :orientation "v" :spacing 20 :space-evenly false :vexpand false :hexpand false
+      (scale :min 0 :max 101 :value vol :tooltip "${vol}%" :onchange "amixer -D pulse sset Master {}%" :orientation "v" :flipped true :class "volScale")
+      (label :text volIcon :class "volIcon"))
+    (box :orientation "v" :spacing 20 :space-evenly false :vexpand false :hexpand false
+      (scale :min 0 :max 101 :value mic :tooltip "${mic}%" :onchange "amixer -D pulse sset Capture {}%" :orientation "v" :flipped true :class "micScale")
+      (label :text "" :class "micIcon"))
+    (box :orientation "v" :spacing 20 :space-evenly false :vexpand false :hexpand false
+      (scale :min 0 :max 101 :value bright :tooltip "${bright}%" :onchange "../scripts/setbright {}" :orientation "v" :flipped true :class "brightScale")
+      (label :text "" :class "brightIcon"))
+    (box :orientation "v" :spacing 20 :space-evenly false :vexpand false :hexpand false
+      (scale :min 0 :max 101 :value space :tooltip "${space}%" :onchange "" :orientation "v" :flipped true :class "spaceScale")
+      (label :text "" :class "spaceIcon"))))
+
+(defwidget time[]
+  (box :orientation "v"
+       :halign "center"
+       :space-evenly false
+       :class "time"
+    (label :text hour
+           :class "hour")
+    (label :text date
+           :class "date")))
+
+(defwidget control []
+  (box :class "control" :orientation "v" :spacing 10
+    (box :orientation "h" :spacing 10
+      (button :tooltip "Mute"      :class "mute ${volIcon == "墳" ? "muteActive" : "muteInactive"}" :onclick "amixer sset Master toggle" volIcon)
+      (button :tooltip "Bluetooth" :class "bt ${btIcon == "" ? "btInactive" : "btActive"}" :onclick "scripts/bluetooth toggle" btIcon))
+    (box :orientation "h" :spacing 10
+      (button :tooltip "Do Not Disturb" :class "dunst ${dunstIcon == "" ? "dunstActive" : "dunstInactive"}" :onclick "scripts/dunst toggle" dunstIcon)
+      (button :tooltip "Networking"     :class "net ${netIcon == "直" ? "netActive" : "netInactive"}"  :onclick "scripts/network toggle" netIcon))))
+
+(defwidget circles []
+  (box :orientation "h" :spacing 20
+    (box :class "circles"
+      (circular-progress :value cpu
+                         :thickness 15
+                         :clockwise true
+                         :class "cpu"
+                         :tooltip "${cpu}%"
+        (label :text  ""
+               :class "cpuIcon")))
+    (box :class "circles"
+      (circular-progress :value ram
+                         :thickness 15
+                         :clockwise true
+                         :class "ram"
+                         :tooltip "${ram}%"
+        (label :text  ""
+               :class "ramIcon")))))
+
+(defwidget quote []
+  (label :class "quote"
+         :text "Intelligence is the ability to avoid doing work, yet getting the work done.
+         ― Linus Torvalds"
+         :wrap true))
+
+(defpoll os        :interval "24h" "scripts/getos")
+(defpoll wm        :interval "24h" "scripts/getwm")
+(defpoll mic       :interval "10s" "scripts/getmic")
+(defpoll vol       :interval "2s"  "scripts/volume value")
+(defpoll cpu       :interval "10s" "../scripts/getcpu")
+(defpoll ram       :interval "10s" "../scripts/getram")
+(defpoll usr       :interval "24h" "whoami")
+(defpoll hst       :interval "24h" "uname -n")
+(defpoll hour      :interval "2s"  "date '+%H:%M'")
+(defpoll date      :interval "10m" "date +%a,' '%b' '%d")
+(defpoll space     :interval "10m" "scripts/getspace")
+(defpoll bright    :interval "2s"  "../scripts/getbright")
+(defpoll btIcon    :interval "2s"  "scripts/bluetooth icon")
+(defpoll volIcon   :interval "2s"  "scripts/volume icon")
+(defpoll netIcon   :interval "2s"  "scripts/network icon")
+(defpoll dunstIcon :interval "2s"  "scripts/dunst icon")

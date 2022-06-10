@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+
+get_wm() {
+	ps -e | grep -o \
+		-e "2bwm" \
+		-e "awesome" \
+		-e "berry" \
+		-e "bspwm" \
+		-e "dwm" \
+		-e "i3" \
+		-e "openbox" \
+		-e "sowm" \
+		-e "nsowm" \
+		-e "berry" \
+		-e "cwm" \
+		-e "mcwm" \
+		-e "fluxbox" \
+		-e "spectrwm" \
+		-e "herbstluftwm" \
+		-e "blackbox" \
+		-e "qpwm" \
+		-e "weema" \
+		-e "ctwm" \
+		-e "sara" \
+		-e "Hypr" \
+		-e "worm" \
+		-e "leftwm" \
+		-e "xmonad" \
+		-e "xwm" | tail -n 1
+}
+
+kill_wm() {
+	case "$(get_wm)" in
+	bspwm)
+		bspc quit
+		;;
+	berry)
+		berryc quit 
+		;;
+	*)
+		killall "$(get_wm)"
+		;;
+	esac
+}
+
+case "$1" in
+-p | --print)
+	get_wm
+	;;
+-k | --kill)
+	kill_wm
+	;;
+*)
+	exit
+	;;
+esac

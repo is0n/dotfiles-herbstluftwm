@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+function status {
+  if nmcli | grep -q "wlp3s0: connected"; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+function toggle {
+  if status; then
+    nmcli radio wifi off
+  else
+    nmcli radio wifi on
+  fi
+}
+
+function icon {
+  if status; then
+    echo "直"
+  else
+    echo "睊"
+  fi
+}
+
+case "$1" in
+  icon)
+    icon;;
+  toggle)
+    toggle;;
+esac

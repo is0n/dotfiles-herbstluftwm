@@ -1,0 +1,18 @@
+mpd_host = "127.0.0.1"
+mpd_port = 6600
+
+visualizer_data_source = "/tmp/mpd.fifo"
+visualizer_output_name = "my_fifo"
+visualizer_type = "ellipse"
+visualizer_in_stereo = "yes"
+visualizer_look = "●▮"
+
+song_columns_list_format = "(95)[green]{t} (5)[blue]{l}"
+progressbar_look =  "━━"
+statusbar_visibility = "yes"
+header_visibility = "no"
+titles_visibility = "no"
+
+execute_on_song_change = "~/.config/ncmpcpp/art &"
+
+# vim:ft=toml

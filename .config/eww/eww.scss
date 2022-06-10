@@ -1,0 +1,61 @@
+@import "mountain.scss";
+
+* {
+  all: unset;
+  font-family: JetBrains Mono;
+}
+
+button:hover {
+  color: $lightblack;
+}
+
+tooltip {
+  background-color: $background;
+  border-radius: 10px;
+  font-size: 14px;
+  border: 2px solid $foreground;
+}
+
+scale trough highlight {
+  all: unset;
+  background-color: $green;
+  color: #000000;
+  border-radius: 10px;
+}
+
+scale trough {
+  all: unset;
+  background-color: $black;
+  border-radius: 50px;
+  min-height: 3px;
+  min-width: 50px;
+  margin-left: 10px;
+  margin-right: 20px;
+}
+
+.bar {
+  // Maybe use w/ dark wallpaper?
+  // border: 1px solid $foreground;
+  border-radius: 10px;
+  padding: 0px 15px 0px 15px;
+  background-color: $background;
+  color: $foreground;
+}
+
+.workspaces, .label {
+  font-size: 25px;
+}
+
+.powermenu {
+  font-size: 25px;
+  color: $red;
+}
+
+.dashboard {
+  font-size: 25px;
+  color: $cyan;
+}
+
+.text {
+  font-size: 14px;
+}

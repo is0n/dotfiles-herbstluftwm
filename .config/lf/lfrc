@@ -1,0 +1,142 @@
+# Settings
+set previewer ~/.config/lf/preview
+set cleaner ~/.config/lf/cleaner
+set drawbox true
+set icons true
+set info "size"
+# set hidden
+
+# Functions
+cmd open ${{
+	case $(file -b --mime-type "$f") in
+		video/* | image/gif)
+			mpv "$f"
+			;;
+		image/*)
+			sxiv "$f"
+			;;
+		application/pdf)
+			zathura "$f"
+			;;
+		*)
+			$EDITOR "$f"
+			;;
+	esac
+}}
+
+cmd mkdir ${{
+	mkdir "$1"
+}}
+
+cmd touch ${{
+	touch "$1"
+}}
+
+cmd edit ${{
+	$EDITOR "$1"
+}}
+
+cmd mv ${{
+	mv "$f" "$1"
+}}
+
+cmd rn ${{
+	EXT=$(basename "$f" | cut -d . -f2)
+	mv "$f" "${1}.${EXT}"
+}}
+
+cmd chmod ${{
+	chmod +x "$f"
+	lf -remote 'send reload'
+}}
+
+cmd unarchive ${{
+	case "$f" in
+		*.zip)
+			unzip "$f"
+			rm "$f"
+			;;
+		*.tar.gz)
+			tar -xzvf "$f"
+			rm "$f"
+			;;
+		*.tar.bz2)
+			tar -xjvf "$f"
+			rm "$f"
+			;;
+		*.tar)
+			rm "$f"
+			tar -xvf "$f"
+			;;
+		*) echo "Unsupported format";;
+		esac
+}}
+
+cmd bulkrename ${{
+    ls -a | tail -n +3 | vimv --stdin -q
+    lf -remote "send $id load"
+}}
+
+cmd zoxide %lf -remote "send $id cd '$(zoxide query $1)'"
+
+cmd draw_image ${{
+	>"${UEBERZUG_FIFO}" declare -A -p cmd=( \
+			[action]=add [identifier]="$UEBERZUG_IDEN" \
+			[x]="0" [y]="0" [width]=$(tput cols) [height]=$(tput lines) \
+			[scaler]=fit_contain [scaling_position_x]=0.5 [scaling_position_y]=0.5 \
+			[path]="$f" )
+	read -s -n1
+}}
+
+# Unbind Defaults
+map m
+map r
+
+# Remap Defaults
+map C clear
+map c cut
+map d delete
+map <space> toggle
+
+# Function Mappings
+map F $lf -remote "send $id select \"$(ls -a -F | tail -n +3 | sed 's/*//g;s/@//g' | fzfp --header='Jump to location')\""
+map t push :touch<space>
+map md push :mkdir<space>
+map mv push :mv<space>
+map rn push :rn<space>
+map z push :zoxide<space>
+map x $chmod +x "$f" && lf -remote "send $id reload"
+map X $chmod -x "$f" && lf -remote "send $id reload"
+map U unarchive
+map o open "$f"
+map br bulkrename
+
+# Terminal Programs
+map i draw_image
+map mi !mediainfo "$f"
+map W &wallpaper set "$f"
+map R &wallpaper random; lf -remote "send $id select '$(wallpaper get)'"
+map P &wal -i "$f" -n -q; wallpaper set "$f"
+
+# Built In Stuff
+map . set hidden!
+map K page-up
+map J page-down
+map D push :delete<enter>y
+map <esc> quit
+
+# Dir Mappings
+map g/ cd /
+map ~ cd ~
+map gD cd ~/Desktop/
+map gd cd ~/Downloads/
+map gw cd ~/Wallpapers/
+map ga cd ~/Wallpapers/alphacoders/
+map gW %lf -remote "send $id select '$(wallpaper get)'"
+map gs cd ~/Pictures/Screenshots/
+map gr cd ~/Videos/Recordings/
+map gc cd ~/.config/
+map gb cd ~/.local/bin/
+map gv cd ~/.config/nvim
+
+# vim:ft=sh

@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+declare -r -x UEBERZUG_FIFO="$(mktemp --dry-run --suffix "lf$$-ueberzug")"
+declare -r -x UEBERZUG_IDEN="${UEBERZUG_FIFO#*.}"
+declare -r -x PREVIEW_TMP="$(mktemp -d --suffix "lf-$$-ueberzug")"
+
+function start_ueberzug {
+    mkfifo "${UEBERZUG_FIFO}"
+    <"${UEBERZUG_FIFO}" ueberzug layer --parser bash --silent &
+    3> "${UEBERZUG_FIFO}" exec
+}
+
+function remove_temp {
+    rm "${UEBERZUG_FIFO}"
+    rm -r "${PREVIEW_TMP}"
+}
+
+start_ueberzug
+lf "$@"
+remove_temp

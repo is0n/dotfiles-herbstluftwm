@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+# Path for album art
+album_art="$(mktemp)"
+
+# Current song info
+song_link="$(mpc --format %file% current 2>/dev/null)"
+song_info="$(mpc --format '%title%\n%artist%' current 2>/dev/null)"
+
+[ -z "${song_link}" ] && {
+  dunstify -t 8000 "Nothing Currently Playing"
+  exit
+}
+
+# Link to the album art
+album_link="$(curl -s "https://open.spotify.com/oembed?url=${song_link}" | grep -Eo "(http|https)://i.scdn.co/image/[a-zA-Z0-9./?=_%:-]*")"
+
+# Download album art
+curl -s "${album_link}" > "${album_art}"
+
+# Notification
+dunstify -i "${album_art}" -t 8000 "${song_info}"
+
+# Delete cache
+rm -f "${album_art}"

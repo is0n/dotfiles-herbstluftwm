@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+function status {
+  if bluetoothctl show | grep -q "Powered: yes"; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+function toggle {
+  if status; then
+    bluetoothctl power off
+  else
+    bluetoothctl power on
+  fi
+}
+
+function icon {
+  if echo info | bluetoothctl | grep -q "Device"; then
+    echo ""
+  elif status; then
+    echo ""
+  else
+    echo ""
+  fi
+}
+
+case "$1" in
+  icon)
+    icon;;
+  toggle)
+    toggle;;
+esac

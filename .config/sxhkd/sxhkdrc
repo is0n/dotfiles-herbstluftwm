@@ -1,0 +1,63 @@
+# Floating Window
+hyper + {f,a,m}
+	floating {~/.config/lf/startlf,ani-cli,spt}
+
+# Terminals
+super + Return
+	$TERMINAL
+
+super + shift + Return
+	floating $SHELL
+
+# System Control (volume/brightness)
+{F1,F2}
+	bright {-,+}
+
+XF86MonBrightness{Down,Up}
+	bright {-,+}
+
+{F10,XF86AudioMute}
+	amixer sset Master toggle
+
+{F11,F12}
+	amixer sset Master 5%{-,+}
+
+XF86Audio{Lower,Raise}Volume
+	amixer sset Master 5%{-,+}
+
+{F7,F8,F9}
+  spt playback {-p,-t,-n}
+  # playerctl -p spotifyd {previous,play-pause,next}
+
+# Restart sxhkd
+super + Escape
+	pkill -USR1 -x sxhkd
+
+# Toggle screenkey
+hyper + s
+	pgrep screenkey && killall screenkey || screenkey -s small
+
+# rofi
+super + {space}
+	rofi -disable-history -show drun
+
+hyper + b
+	rofi-bluetooth
+
+# screenshot
+super + ctrl + {1,2}
+	screenshot {full,area}
+
+# screenrecord
+super + ctrl + 3
+	screenrecord
+
+ctrl + space
+  ~/.config/spotifyd/notif
+  # ~/.config/ncmpcpp/art
+
+hyper + {d,BackSpace}
+  {~/.config/eww/scripts/dashboard,~/.config/eww/scripts/powermenu}
+
+~button1
+	xqp 0 && jgmenu

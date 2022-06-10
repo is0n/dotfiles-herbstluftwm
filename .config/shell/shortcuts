@@ -1,0 +1,75 @@
+#!/bin/sh
+
+# Makes life easier
+alias c="clear -x"
+alias pip="pip3"
+alias python="python3"
+alias v="nvim"
+alias t="touch"
+alias untar="tar -xzvf"
+alias history="cat ~/.cache/zsh/history"
+alias dc="cd"
+alias sudo="doas"
+alias lf="~/.config/lf/startlf"
+alias p="doas pacman"
+alias y="yay"
+alias d="doas"
+alias wp="wallpaper"
+alias grep="grep --color=always"
+alias xev="xev | awk -F'[ )]+' '/^KeyPress/ { a[NR+2] } NR in a { printf \"%-3s %s\n\", \$5, \$8 }'"
+alias hc="herbstclient"
+
+# Exa (ls alternative)
+alias la="exa --icons -a"
+alias ll="exa --icons --long --header"
+alias ls="exa --icons -F"
+alias sl="exa --icons -F"
+alias lr="exa --icons -r"
+alias lR="exa --icons -R"
+alias lla="exa --icons --long --header -a"
+alias tree="exa --icons --tree"
+
+# Git
+alias gc="git clone"
+alias gi="git init"
+alias gb="git branch"
+alias gs="git status"
+alias gp="git push"
+alias gP="git pull"
+alias ga="git add"
+alias gr="git restore"
+alias gcm="git commit -m"
+
+# Navigation
+alias ..="cd .."
+alias ....="cd ../.."
+alias ......="cd ../../.."
+alias ........="cd ../../../.."
+
+# Dotfiles
+alias dotfiles="git --git-dir=$HOME/Programming/dotfiles/ --work-tree=$HOME"
+alias dlg="lazygit --git-dir=/home/is0n/Programming/dotfiles/ --work-tree=/home/is0n"
+alias ds="dotfiles status"
+alias da="dotfiles add"
+alias dcm="dotfiles commit -m"
+alias dp="dotfiles push"
+
+prog() {
+	cd ~/Programming/"$1"
+}
+
+lfcd() {
+	tmp="$(mktemp)"
+
+	~/.config/lf/startlf -last-dir-path="$tmp" "$@"
+
+	[ -z "$tmp" ] && exit 0
+
+	dir="$(cat "$tmp")"
+	rm -f "$tmp"
+	if [ -d "$dir" ]; then
+		if [ "$dir" != "$(pwd)" ]; then
+			cd "$dir"
+		fi
+	fi
+}

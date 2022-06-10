@@ -1,0 +1,50 @@
+@import "mountain.scss";
+
+* {
+  all: unset;
+  font-family: JetBrains Mono;
+}
+
+button:hover {
+  color: $lightblack;
+}
+
+tooltip {
+  background-color: $background;
+  border-radius: 10px;
+  font-size: 14px;
+  border: 2px solid $foreground;
+}
+
+.powermenu {
+  background-color: $background;
+  color: $foreground;
+  padding: 10px;
+  border: 1px solid $foreground;
+  font-size: 40px;
+  border-radius: 0px 10px 10px 0px;
+}
+
+.shutdown {
+  color: $blue;
+}
+
+.reboot {
+  color: $magenta;
+}
+
+.lock {
+  color: $green;
+}
+
+.sleep {
+  color: $cyan;
+}
+
+.logout {
+  color: $yellow;
+}
+
+.close {
+  color: $red;
+}

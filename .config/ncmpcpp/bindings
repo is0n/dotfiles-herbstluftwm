@@ -1,0 +1,22 @@
+def_key "k"
+  scroll_up
+
+def_key "j"
+  scroll_down
+
+def_key "l"
+  next_column
+
+def_key "h"
+  previous_column
+
+def_key "g"
+  move_home
+
+def_key "G"
+  move_end
+
+def_key "space"
+  add_item_to_playlist
+
+# vim:ft=conf

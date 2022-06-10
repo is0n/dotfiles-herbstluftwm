@@ -1,0 +1,130 @@
+@import "mountain.scss";
+
+* {
+  all: unset;
+  font-family: JetBrains Mono;
+}
+
+tooltip {
+  background-color: $background;
+  border-radius: 10px;
+  font-size: 14px;
+  border: 2px solid $foreground;
+}
+
+.dashboard {
+  border-radius: 10px 0px 0px 10px;
+  padding: 20px;
+  background-color: $background;
+  color: $foreground;
+  border: 1px solid $foreground;
+}
+
+.profile, .fetch, .time, .control, .sliders, .circles, .quote {
+  background-color: $black;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.pfp {
+  background-image: url("assets/arlo1.png");
+  min-width: 125px;
+  min-height: 125px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 10px;
+  border: 2px solid $blue;
+}
+
+.me {
+  padding: 1rem 0rem 0rem 0rem;
+  color: $magenta;
+}
+
+.os {
+  color: $green;
+}
+
+.wm {
+  color: $cyan;
+}
+
+.usr {
+  color: $yellow;
+}
+
+.hst {
+  color: $red;
+}
+
+.label {
+  font-size: 30px;
+}
+
+.hour {
+  font-size: 30px;
+  color: $blue;
+}
+
+.date {
+  font-size: 15px;
+  color: $magenta;
+}
+
+.dunst, .bt, .mute, .net {
+  color: $background;
+  border-radius: 10px;
+  font-size: 30px;
+}
+
+.muteActive, .volScale trough highlight {
+  background-color: $green;
+}
+
+.btActive, .micScale trough highlight {
+  background-color: $cyan;
+}
+
+.dunstActive, .brightScale trough highlight {
+  background-color: $yellow;
+}
+
+.netActive, .spaceScale trough highlight {
+  background-color: $red;
+}
+
+.dunstInactive, .btInactive, .muteInactive, .netInactive {
+  background-color: $lightblack;
+}
+
+.volIcon, .micIcon, .brightIcon, .spaceIcon {
+  font-size: 30px;
+  color: $foreground;
+}
+
+scale trough {
+  border-radius: 10px;
+  min-width: 1.1rem;
+  min-height: 10rem;
+  background-color: $background;
+}
+
+scale trough highlight {
+  border-radius: 10px;
+}
+
+.cpu {
+  color: $magenta;
+  background-color: $background;
+}
+
+.ram {
+  color: $blue;
+  background-color: $background;
+}
+
+.cpuIcon, .ramIcon {
+  margin: 2.5rem;
+  font-size: 40px;
+  color: $foreground;
+}

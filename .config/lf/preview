@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+TMP_FILE="$HOME/.cache/lf-thumbcache.png"
+
+w=$(( $2 - 1 ))
+h="$3"
+x="$4"
+y=$(( $5 + 1 ))
+
+function draw_image {
+	>"${UEBERZUG_FIFO}" declare -A -p cmd=( \
+		[action]=add [identifier]="$UEBERZUG_IDEN" \
+		[x]="$x" [y]="$y" [width]="$w" [height]="$h" \
+		[scaler]=fit_contain [scaling_position_x]=0.5 [scaling_position_y]=0.5 \
+		[path]="$1" )
+	exit 1
+}
+
+case $(file -b --mime-type "$1") in
+	image/svg+xml)
+		echo "Size: `exiftool "$1" | grep '^Image Size' | awk '{print $4}'`"
+		rsvg-convert -w 1024 -h 1024 "$1" -o "${TMP_FILE}"
+		draw_image "${TMP_FILE}"
+		;;
+	image/*)
+		echo "Size: `exiftool "$1" | grep '^Image Size' | awk '{print $4}'`"
+		draw_image "$1"
+		;;
+	application/pdf)
+		y="$5"
+		pdftoppm -png -f 1 -singlefile "$1" "${TMP_FILE%.png}"
+		draw_image "${TMP_FILE}"
+		;;
+	video/*)
+		echo "Duration: `exiftool "$1" | grep '^Duration' | awk '{print $3}'`"
+		ffmpegthumbnailer -i "$1" -o "${TMP_FILE}" -s 0
+		draw_image "${TMP_FILE}"
+		;;
+	application/x-mach-binary | application/zip | inode/symlink)
+		exa -lha --color=always "$1"
+		;;
+	*)
+		gnat "$1"
+		;;
+esac
+
+rm -f "${TMP_FILE}"
