@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+dimensions=$(xdpyinfo | grep 'dimensions:' | sed 's/  dimensions:    //g;s/ pixels (507x317 millimeters)//g')
+output="$HOME/Videos/Recordings/$(date +%Y-%m-%d-%T)-recording.mkv"
+thumbnail="$HOME/.cache/recording-thumbnail.png"
+
+function record {
+  scrot "${thumbnail}"
+	dunstify -i "${thumbnail}" "Screen Recording Initiated"
+	ffmpeg -video_size $dimensions -framerate 30 -f x11grab -i :0.0+0,0 -c:v libx264rgb -crf 0 -preset ultrafast $output
+  rm "${thumbnail}"
+}
+
+function end_record {
+  dunstify -i "${thumbnail}" "Screen Recording Ended" 
+  killall ffmpeg
+}
+
+pgrep ffmpeg && end_record || record

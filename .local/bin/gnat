@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+highlight --out-format ansi "$1" || cat "$1"

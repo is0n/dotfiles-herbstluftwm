@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+TMP_FILE="$HOME/.cache/lf/thumbcache.png"
+
+x="1"
+y="1"
+w="$FZF_PREVIEW_COLUMNS"
+h="$FZF_PREVIEW_LINES"
+
+function image {
+	>"${UEBERZUG_FIFO}" declare -A -p cmd=( \
+		[action]=add [identifier]="$UEBERZUG_IDEN" \
+		[x]="$x" [y]="$y" [width]="$w" [height]="$h" \
+		[scaler]=fit_contain [scaling_position_x]=0.5 [scaling_position_y]=0.5 \
+		[path]="$1" )
+	exit 1
+}
+
+case $(file -b --mime-type "$1" | head -n 1) in
+	image/svg+xml)
+		rsvg-convert -w 1024 -h 1024 "$1" -o "${TMP_FILE}"
+		image "${TMP_FILE}"
+		;;
+	image/*)
+		image "$1"
+		;;
+	video/*)
+		ffmpegthumbnailer -i "$1" -o "${TMP_FILE}" -s 0
+		image "${TMP_FILE}"
+		;;
+	applimageion/x-mach-binary | application/zip)
+		exa -lha --color=always "$1"
+		;;
+	inode/directory)
+		exa --icons -T -F -L 1 "$1"
+		;;
+	*)
+		gnat "$1"
+		;;
+esac

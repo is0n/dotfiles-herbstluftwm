@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+output="/home/is0n/Pictures/Screenshots/$(date +%Y-%m-%d-%T)-screenshot.png"
+
+case "$1" in
+	"full") scrot "$output" || exit ;;
+	"area") scrot "$output" --select --line mode=edge || exit ;;
+esac
+
+dunstify -i "$output" "Screenshot Taken"
