@@ -1,4 +1,4 @@
-<img src="https://img.shields.io/badge/Arch_Linux-1793D1?style=for-the-badge&logo=arch-linux&logoColor=white" align="left" /><img src="https://img.shields.io/github/stars/is0n/dotfiles.svg?style=for-the-badge&label=Star&maxAge=2592000" align="right"/>
+<img src="https://img.shields.io/badge/Arch_Linux-1793D1?style=for-the-badge&logo=arch-linux&logoColor=white" align="left" /><img src="https://img.shields.io/github/stars/is0n/dotfiles-herbstluftwm.svg?style=for-the-badge&label=Star&maxAge=2592000" align="right"/>
 <h1 align='center'>is0n/dotfiles</h1>
 
 ![Preview](https://user-images.githubusercontent.com/57725322/173096539-e4542b89-754d-4841-80e9-26f0761a2b71.png)
@@ -64,7 +64,7 @@ $ paru -Sy eww-git pidswallow-git alttab-git mopidy mopidy-mpd mopidy-spotify
 #### Install Dotfiles
 ```shell
 # Not ready ¯\_(ツ)_/¯
-$ git clone https://github.com/is0n/dotfiles
+$ git clone https://github.com/is0n/dotfiles-herbstluftwm
 $ cd dotfiles
 $ cp -r .config/* ~/.config/
 ```
@@ -80,7 +80,7 @@ $ cp -r .config/* ~/.config/
 - [rxfetch](https://github.com/Mangeshrex/rxfetch) - fetch tool
 - [lf](https://github.com/gokcehan/lf/) - file manager
 - [neovim](https://github.com/neovim/neovim) - text editor
-- [.local/bin/colorblocks](https://github.com/is0n/dotfiles/blob/master/.local/bin/colorblocks) - rice?
+- [.local/bin/colorblocks](https://github.com/is0n/dotfiles-herbstluftwm/blob/master/.local/bin/colorblocks) - rice?
 
 <h4 align='center'>Grid Mode</h4>
 
